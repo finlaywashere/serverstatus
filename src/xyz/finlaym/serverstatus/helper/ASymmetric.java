@@ -25,7 +25,7 @@ public class ASymmetric {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	
-	static final String RSA = "RSA";
+	public static final String RSA = "RSA";
 
 	/**
 	 * Gen keys.
