@@ -1,0 +1,30 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+}
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+sourceSets {
+    main{
+        java{
+            srcDir 'src/'
+        }
+    }
+}
+
+dependencies {
+    
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'xyz.finlaym.serverstatus.Main'
+}
