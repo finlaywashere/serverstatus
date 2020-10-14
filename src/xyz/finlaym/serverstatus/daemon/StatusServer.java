@@ -3,6 +3,7 @@ package xyz.finlaym.serverstatus.daemon;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Scanner;
@@ -104,7 +105,13 @@ public class StatusServer extends Thread{
 				}
 				System.out.println("Sucessfully authenticated with remote server!");
 				
-				String[] keyS = ASymmetric.decrypt(in.nextLine(), kManager.getLocalKey().getPrivate(), kManager.getLocalKey().getPrivate().getAlgorithm()).split(":",2);
+				// Generate a new keypair for the key exchange to do PFS
+				KeyPair tmpPair = ASymmetric.genKeys(ASymmetric.RSA, 2048);
+				String pubS = tmpPair.getPublic().getAlgorithm()+":"+BASE64.encode(tmpPair.getPublic().getEncoded());
+				
+				out.println(ASymmetric.encrypt(pubS, remotePub, remotePub.getAlgorithm()));
+				
+				String[] keyS = ASymmetric.decrypt(in.nextLine(), tmpPair.getPrivate(), tmpPair.getPrivate().getAlgorithm()).split(":",2);
 				SecretKey sKey = Symmetric.genKeyFromByteArray(BASE64.decode(keyS[1]), keyS[0]);
 				
 				// Now we're encrypted and authenticated!

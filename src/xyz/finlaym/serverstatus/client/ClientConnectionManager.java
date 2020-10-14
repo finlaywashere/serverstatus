@@ -78,9 +78,13 @@ public class ClientConnectionManager {
 		}
 		out.println(true);
 		
+		String tmpPubS = ASymmetric.decrypt(in.nextLine(), kManager.getLocalKey().getPrivate(), kManager.getLocalKey().getPrivate().getAlgorithm());
+		String[] tmpPubSS = tmpPubS.split(":",2);
+		PublicKey tmpPub = ASymmetric.getPublicKeyFromByteArray(BASE64.decode(tmpPubSS[1]), tmpPubSS[0]);
+		
 		this.sKey = Symmetric.genKey(Symmetric.AES, 256);
 		String sKeyS = this.sKey.getAlgorithm()+":"+BASE64.encode(this.sKey.getEncoded());
-		out.println(ASymmetric.encrypt(sKeyS, remotePub,remotePub.getAlgorithm()));
+		out.println(ASymmetric.encrypt(sKeyS, tmpPub, tmpPub.getAlgorithm()));
 		connected = true;
 	}
 	public boolean isConnected() {
