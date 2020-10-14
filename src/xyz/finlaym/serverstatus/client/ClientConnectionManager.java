@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 
 import xyz.finlaym.serverstatus.common.KeyManager;
 import xyz.finlaym.serverstatus.common.Signature;
+import xyz.finlaym.serverstatus.daemon.StatusServer;
 import xyz.finlaym.serverstatus.helper.ASymmetric;
 import xyz.finlaym.serverstatus.helper.BASE64;
 import xyz.finlaym.serverstatus.helper.Symmetric;
@@ -20,8 +21,8 @@ public class ClientConnectionManager {
 	private Scanner in;
 	private PrintWriter out;
 	private boolean connected = false;
-	public ClientConnectionManager(KeyManager kManager, String ip, int port) throws Exception{
-		this.s = new Socket(ip,port);
+	public ClientConnectionManager(KeyManager kManager, String ip) throws Exception{
+		this.s = new Socket(ip,StatusServer.PORT);
 		this.out = new PrintWriter(s.getOutputStream(),true);
 		this.in = new Scanner(s.getInputStream());
 		
@@ -45,6 +46,8 @@ public class ClientConnectionManager {
 		SecureRandom rand = new SecureRandom();
 		rand.setSeed(System.nanoTime());
 		nonce = rand.nextInt(Integer.MAX_VALUE);
+		
+		out.println(nonce);
 		
 		String remotePubS = in.nextLine();
 		String[] remotePubSS = remotePubS.split(":",2);
@@ -75,13 +78,9 @@ public class ClientConnectionManager {
 		}
 		out.println(true);
 		
-		String tmpPubS = ASymmetric.decrypt(in.nextLine(), kManager.getLocalKey().getPrivate(), kManager.getLocalKey().getPrivate().getAlgorithm());
-		String[] tmpPubSS = tmpPubS.split(":",2);
-		PublicKey tmpPub = ASymmetric.getPublicKeyFromByteArray(BASE64.decode(tmpPubSS[1]), tmpPubSS[0]);
-		
 		this.sKey = Symmetric.genKey(Symmetric.AES, 256);
 		String sKeyS = this.sKey.getAlgorithm()+":"+BASE64.encode(this.sKey.getEncoded());
-		out.println(ASymmetric.encrypt(sKeyS, tmpPub, tmpPub.getAlgorithm()));
+		out.println(ASymmetric.encrypt(sKeyS, remotePub,remotePub.getAlgorithm()));
 		connected = true;
 	}
 	public boolean isConnected() {

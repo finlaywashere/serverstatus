@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import javax.crypto.SecretKey;
 
+import xyz.finlaym.serverstatus.client.ClientConnectionManager;
 import xyz.finlaym.serverstatus.common.KeyManager;
 import xyz.finlaym.serverstatus.daemon.StatusServer;
 import xyz.finlaym.serverstatus.helper.ASymmetric;
@@ -153,5 +154,15 @@ public class Main {
 		KeyManager kManager = new KeyManager(new File("ca.pub"), new File("local.priv"), new File("local.pub"), new File("local.sig"));
 		StatusServer sServer = new StatusServer(kManager);
 		sServer.start();
+		@SuppressWarnings("resource")
+		Scanner in = new Scanner(System.in);
+		ClientConnectionManager ccm = new ClientConnectionManager(kManager, "localhost");
+		while(true) {
+			System.out.print("> ");
+			String cmd = in.nextLine();
+			if(cmd.equalsIgnoreCase("ping")) {
+				ccm.ping();
+			}
+		}
 	}
 }

@@ -3,7 +3,6 @@ package xyz.finlaym.serverstatus.daemon;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Scanner;
@@ -17,7 +16,7 @@ import xyz.finlaym.serverstatus.helper.BASE64;
 import xyz.finlaym.serverstatus.helper.Symmetric;
 
 public class StatusServer extends Thread{
-	private static final int PORT = 8888;
+	public static final int PORT = 8888;
 	
 	private KeyManager kManager;
 	public StatusServer(KeyManager kManager){
@@ -105,13 +104,7 @@ public class StatusServer extends Thread{
 				}
 				System.out.println("Sucessfully authenticated with remote server!");
 				
-				// Generate a new keypair for the key exchange to do PFS
-				KeyPair tmpPair = ASymmetric.genKeys(ASymmetric.RSA, 4096);
-				String pubS = tmpPair.getPublic().getAlgorithm()+":"+BASE64.encode(tmpPair.getPublic().getEncoded());
-				
-				out.println(ASymmetric.encrypt(pubS, remotePub, remotePub.getAlgorithm()));
-				
-				String[] keyS = ASymmetric.decrypt(in.nextLine(), tmpPair.getPrivate(), tmpPair.getPrivate().getAlgorithm()).split(":",2);
+				String[] keyS = ASymmetric.decrypt(in.nextLine(), kManager.getLocalKey().getPrivate(), kManager.getLocalKey().getPrivate().getAlgorithm()).split(":",2);
 				SecretKey sKey = Symmetric.genKeyFromByteArray(BASE64.decode(keyS[1]), keyS[0]);
 				
 				// Now we're encrypted and authenticated!
@@ -121,6 +114,7 @@ public class StatusServer extends Thread{
 					String cmdS = cmd[0].toLowerCase();
 					if(cmdS.equals("ping")) {
 						out.println(Symmetric.encrypt("pong", sKey, sKey.getAlgorithm()));
+						System.out.println("pong");
 						continue;
 					}
 					
