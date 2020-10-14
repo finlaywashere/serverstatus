@@ -27,7 +27,8 @@ public class KeyManager {
 		
 		in = new Scanner(pubF);
 		String pubA = in.nextLine();
-		PublicKey pubK = ASymmetric.getPublicKeyFromByteArray(Base64.decode(in.nextLine().replaceAll("&l", "\n")), pubA);
+		String pubV = in.nextLine().replaceAll("&l", "\n");
+		PublicKey pubK = ASymmetric.getPublicKeyFromByteArray(Base64.decode(pubV), pubA);
 		in.close();
 		in = new Scanner(privF);
 		String privA = in.nextLine();

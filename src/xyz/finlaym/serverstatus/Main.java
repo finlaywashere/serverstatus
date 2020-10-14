@@ -19,19 +19,19 @@ import xyz.finlaym.serverstatus.helper.Symmetric;
 public class Main {
 
 	public static void main(String[] args) throws Exception{
-		if(args.length > 0) {
+		if(args.length != 0) {
 			if(args[0].equalsIgnoreCase("--init")) {
 				Scanner in = new Scanner(System.in);
-				System.out.println("Create CA, create keypair, or sign keys? (ca/key/sign)");
+				System.out.print("Create CA, create keypair, or sign keys? (ca/key/sign) ");
 				String response = in.nextLine();
 				if(response.equalsIgnoreCase("ca")) {
-					System.out.println("Private key file: ");
+					System.out.print("Private key file: ");
 					File priv = new File(in.nextLine());
-					System.out.println("Public key file: ");
+					System.out.print("Public key file: ");
 					File pub = new File(in.nextLine());
-					System.out.println("Password: ");
+					System.out.print("Password: ");
 					String password = in.nextLine();
-					System.out.println("Confirm password: ");
+					System.out.print("Confirm password: ");
 					if(!password.equals(in.nextLine())) {
 						System.err.println("Passwords do not match!");
 						in.close();
@@ -71,9 +71,9 @@ public class Main {
 					in.close();
 					return;
 				}else if(response.equalsIgnoreCase("key")) {
-					System.out.println("Private key file: ");
+					System.out.print("Private key file: ");
 					File priv = new File(in.nextLine());
-					System.out.println("Public key file: ");
+					System.out.print("Public key file: ");
 					File pub = new File(in.nextLine());
 					
 					System.out.print("Generating keys... ");
@@ -99,13 +99,13 @@ public class Main {
 					in.close();
 					return;
 				}else if(response.equalsIgnoreCase("sign")) {
-					System.out.println("Public key file: ");
+					System.out.print("Public key file: ");
 					File pubKeyF = new File(in.nextLine());
-					System.out.println("CA private key file: ");
+					System.out.print("CA private key file: ");
 					File caKeyF = new File(in.nextLine());
-					System.out.println("CA passphrase: ");
+					System.out.print("CA passphrase: ");
 					String password = in.nextLine();
-					System.out.println("Output file: ");
+					System.out.print("Output file: ");
 					File outputF = new File(in.nextLine());
 					
 					Scanner fin = new Scanner(pubKeyF);
@@ -150,7 +150,7 @@ public class Main {
 				}
 			}
 		}
-		KeyManager kManager = new KeyManager(new File("ca.pub"), new File("local.pub"), new File("local.priv"), new File("local.sig"));
+		KeyManager kManager = new KeyManager(new File("ca.pub"), new File("local.priv"), new File("local.pub"), new File("local.sig"));
 		StatusServer sServer = new StatusServer(kManager);
 		sServer.start();
 	}
